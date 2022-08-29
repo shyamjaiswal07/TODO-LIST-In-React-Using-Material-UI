@@ -1,25 +1,82 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import BasicTable from "./BasicTable";
 
-function App() {
+const App = () => {
+  const [text, settext] = useState("");
+  const [data, setdata] = useState(["Shyam Jaiswal" , "Raunak Kumar" , "Yuraj Singh" , "Ashit Kumar Sinha"]);
+  const[buttonText , setbuttonText] = useState("Add");
+  const [editData, showEditData] = useState(-1);
+
+  //  Delete opration =========>
+  function handleDelete(index) {
+    let newArray = data.filter((item) => {
+      if (item !== data[index]) {
+        return item;
+      }
+    });
+    setdata(newArray);
+  }
+  //  Edit Opration ===========>
+  let newTodo = [...data];
+  function onTextEdit(event, index) {
+    newTodo[index] = event.target.value;
+    setdata(newTodo);
+  }
+
+  function handleEdit(index) {
+    showEditData(index);
+    setbuttonText("Save");
+  }
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <form onSubmit={(e) => {
+          if (text !== "") {
+            setdata([...data, text]);
+            settext("");
+          }
+          e.preventDefault()
+        }}>
+      {editData == -1 || editData == undefined ? (
+        <input
+          type="text"
+          placeholder="Enter Text Here ..."
+          value={text}
+          onChange={(e) => {
+            settext(e.target.value);
+          }}
+        />
+      ) : (
+        <input
+          type="text"
+          value={data[editData]}
+          onChange={(e) => onTextEdit(e, editData)}
+        />
+      )}
+
+      <button
+        id="addList"
+        onClick={() => {
+          if (text !== "") {
+            setdata([...data, text]);
+            settext("");
+          }
+          showEditData(-1);
+          setbuttonText("Add");
+        }}
+      >
+        {buttonText}
+      </button>
+      <BasicTable
+        allData={data}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
+      </form>
     </div>
   );
-}
+};
 
 export default App;
